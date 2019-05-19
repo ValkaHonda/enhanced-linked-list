@@ -22,14 +22,23 @@ void func(int sockfd)
         read(sockfd, buff, sizeof(buff));
         // print buffer which contains the client contents
         printf("From client: %s\t To client : ", buff);
-        bzero(buff, MAX);
-        n = 0;
-        // copy server message in the buffer
-        while ((buff[n++] = getchar()) != '\n')
-            ;
 
-        // and send that buffer to client
-        write(sockfd, buff, sizeof(buff));
+        n = 0;
+        if (strncmp("exit", buff, 4) == 0) {
+            printf("Server Exit...\n");
+            break;
+        } else {
+            bzero(buff, MAX);
+            // copy server message in the buffer
+            buff[0] = 'a';
+            buff[1] = 'b';
+            buff[2] = 'c';
+            buff[3] = '\0';
+
+            // and send that buffer to client
+            write(sockfd, buff, sizeof(buff));
+        }
+
 
         // if msg contains "Exit" then server exit and chat ended.
         if (strncmp("exit", buff, 4) == 0) {
