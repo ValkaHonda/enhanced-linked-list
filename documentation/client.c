@@ -8,6 +8,7 @@
 #define PORT 8081
 #define SA struct sockaddr
 void menu(){
+    puts("");
     puts("0.Exit");
     puts("1.Load file:");
     puts("2.Search element:");
@@ -29,7 +30,7 @@ void func(int sockfd)
         read(sockfd, buff, sizeof(buff));
         printf("From Server : %s", buff);
         if ((strncmp(buff, "exit", 4)) == 0) {
-            printf("Client Exit...\n");
+            printf("Client Exit... Thank you for using us!\n");
             break;
         }
     }

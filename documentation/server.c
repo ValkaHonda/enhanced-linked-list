@@ -25,13 +25,14 @@ void func(int sockfd)
         // read the message from client and copy it in buffer
         read(sockfd, buff, sizeof(buff));
         // print buffer which contains the client contents
-        printf("From client: %s\t To client : ", buff);
+        printf("From client: %s\t\n ", buff);
 
         n = 0;
-        if (strcmp("0", buff) == 0) {
+        if (buff[0] == '0') {
             printf("Server Exit...\n");
+            write(sockfd, "exit", sizeof(buff));
             break;
-        } else if (strcmp("1", buff) == 0) {
+        } else if (buff[0] == '1') { // need a fix
             printf("Load...\n");
             bzero(buff, MAX);
             for(int k = 0; k < 3; k++){
@@ -40,13 +41,14 @@ void func(int sockfd)
                 strcat(buff, numberAsString);
                 //strcat(); // not ready!!!
             }
+            printf("%s Should be successfully send\n", buff);
             write(sockfd, buff, sizeof(buff));
-        } else if (strcmp("2", buff) == 0) {
-            printf("Server Exit...\n");
-            break;
-        } else if (strcmp("3", buff) == 0) {
-            printf("Server Exit...\n");
-            break;
+        } else if (buff[0] == '2') {
+            bzero(buff, MAX);
+            write(sockfd, "Option 2 not implemented.", sizeof(buff));
+        } else if (buff[0] == '3') {
+            bzero(buff, MAX);
+            write(sockfd, "Option 3 not implemented.", sizeof(buff));
         }
 
          else {
@@ -56,7 +58,6 @@ void func(int sockfd)
             buff[1] = 'a';
             buff[2] = 'i';
             buff[3] = 'l';
-            buff[4] = '\0';
 
             // and send that buffer to client
             write(sockfd, buff, sizeof(buff));
