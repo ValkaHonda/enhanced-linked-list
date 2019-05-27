@@ -38,7 +38,7 @@ void func(int sockfd)
                 char numberAsString[100];
                 sprintf(numberAsString, "%d", arr[k]);
                 strcat(buff, numberAsString);
-                strcat(); // not ready!!!
+                //strcat(); // not ready!!!
             }
             write(sockfd, buff, sizeof(buff));
         } else if (strcmp("2", buff) == 0) {
