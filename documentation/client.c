@@ -5,15 +5,22 @@
 #include <string.h>
 #include <sys/socket.h>
 #define MAX 80
-#define PORT 8080
+#define PORT 8081
 #define SA struct sockaddr
+void menu(){
+    puts("0.Exit");
+    puts("1.Load file:");
+    puts("2.Search element:");
+    puts("3.Fast search element");
+}
 void func(int sockfd)
 {
     char buff[MAX];
     int n;
     for (;;) {
         bzero(buff, sizeof(buff));
-        printf("Enter the string : ");
+        menu();
+        printf("Please enter your input : ");
         n = 0;
         while ((buff[n++] = getchar()) != '\n')
             ;
@@ -57,8 +64,9 @@ int main()
         printf("connected to the server..\n");
 
     // function for chat
+    printf("**********\n" );
     func(sockfd);
 
     // close the socket
     close(sockfd);
-} 
+}
