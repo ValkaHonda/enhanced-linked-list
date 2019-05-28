@@ -61,6 +61,37 @@ int main()
     }
     puts("*********************************");
 
-    puts("Testing Reading from file:");
+    puts("Testing writing to binary file:");
+    FILE *outfile;
+    outfile = fopen ("numbers", "wb");
+    if (outfile == NULL)
+    {
+        fprintf(stderr, "\nError opend file\n");
+        exit (1);
+    }
+    if (fwrite (&head, sizeof(struct node), 1, outfile) == 0){
+        printf("error writing file !\n");
+    }
+    fclose (outfile);
+    puts("*********************************");
+
+    puts("Testing reading from binary file.");
+    FILE *inputFile;
+    inputFile = fopen("numbers", "rb");
+    if(inputFile == NULL){
+        fprintf(stderr, "\nError opend file\n");
+        exit (1);
+    }
+
+    struct node* inputNodeHead;
+    if(fread(&inputNodeHead, sizeof(struct node), 1, inputFile) == 0){
+        printf("error writing file !\n");
+    }
+    fclose(inputFile);
+    if(inputNodeHead != NULL){
+        printf("successfully read!\n" );
+        printf("%d\n", inputNodeHead->number);
+    }
+
     return 0;
 }
