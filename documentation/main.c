@@ -1,10 +1,18 @@
+
+#include <stdio.h>
 #include <netdb.h>
 #include <netinet/in.h>
 #include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <arpa/inet.h>
+#include <errno.h>
+#include <stdbool.h>
+
 #define MAX 80
 #define PORT 8081
 #define SA struct sockaddr
@@ -92,6 +100,50 @@ int main()
         printf("successfully read!\n" );
         printf("%d\n", inputNodeHead->number);
     }
+    puts("********************************************************");
 
+    puts("Testisg read write functions");
+    struct node inputNodeHead2;
+    struct node secondHeadElement;
+    secondHeadElement.number = 120;
+    int fdread;
+	int fdwrite;
+
+    // write
+// /*
+    fdwrite = open("file6.dat", O_APPEND | O_CREAT | O_WRONLY, S_IRWXU);
+	if (fdwrite == -1) {
+		printf("Cannot open list with users\n");
+	}
+    printf("Testing --> secondHeadElement --> value --> ( %d )\n"
+        , secondHeadElement.number);
+	write(fdwrite, &secondHeadElement, sizeof(struct node));
+	close(fdwrite);
+// */
+    // read
+
+    // /*
+
+    fdread = open("file6.dat", O_RDONLY);
+	if (fdread == -1) {
+		printf("Cannot open log file\n");
+	}
+    lseek(fdread,0,SEEK_SET);
+
+	//Counting the records in the file
+	int bitesRead = read(fdread, &inputNodeHead2, sizeof(struct node));
+    close(fdread);
+
+    if(bitesRead == -1){
+        printf("You are doing something wrong!\n");
+    } else {
+        puts("No, you are ok.");
+    }
+    if(1){
+        printf("successfully readen:  %d \n", inputNodeHead2.number);
+    } else {
+        printf("Something is not right\n" );
+    }
+// */
     return 0;
 }
