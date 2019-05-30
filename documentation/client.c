@@ -5,7 +5,7 @@
 #include <string.h>
 #include <sys/socket.h>
 #define MAX 80
-#define PORT 8081
+#define PORT 8080
 #define SA struct sockaddr
 void menu(){
     puts("");

@@ -11,10 +11,18 @@
 #include <arpa/inet.h>
 #include <errno.h>
 #include <stdbool.h>
+#include <signal.h>
 
 #define MAX 40
-#define PORT 8081
+#define PORT 8080
 #define SA struct sockaddr//Linked list:
+
+
+static volatile int keepRunning = 1;
+
+void intHandler(int dummy) {
+    keepRunning = 0;
+}
 struct node{
     int number;
     struct node* next;
@@ -115,9 +123,14 @@ void func(int sockfd)
 {
     char buff[MAX];
     int n;
+    int fileLoaded = 0;
     struct node *head = NULL;
     // infinite loop for chat
     for (;;) {
+        if(keepRunning == 0){
+            puts("This is a normal way to shutdown server");
+            break;
+        }
         bzero(buff, MAX);
 
         // read the message from client and copy it in buffer
@@ -129,7 +142,7 @@ void func(int sockfd)
         if (buff[0] == '0') {
             printf("Server Exit...\n");
             write(sockfd, "exit", sizeof(buff));
-            break;
+            //break; replacing this with ctrl + c
         } else if (buff[0] == '1') { // load a file
             printf("Loading from file...\n");
             
@@ -154,15 +167,46 @@ void func(int sockfd)
             head = NULL;
             
             head = loadListFromFile(fileName,head);
+            fileLoaded = 1;
 
             sendListToClient(head,sockfd);
 
             // write(sockfd, buff, sizeof(buff));
         } else if (buff[0] == '2') {
-            bzero(buff, MAX);
-            searchForElement(head, 15, sockfd);
+            if(fileLoaded == 0){
+                bzero(buff, MAX);
+                write(sockfd, "You must load file first!", sizeof(buff));
+            } else {
+                char str[MAX];
+                strcpy(str, buff);
+                int init_size = strlen(str);
+                char delim[] = " ";
+
+                char *searchElement = strtok(str, delim);
+                int wordsCount = 0;
+                while (searchElement != NULL)
+                {
+                    wordsCount++;
+                    if(wordsCount == 2){
+                        break;
+                    }
+                    //printf("'%s' <---count---> %d\n", fileName,wordsCount);
+                    searchElement = strtok(NULL, delim);
+                }
+                bzero(buff, MAX);
+                int searchedNumber;
+                sscanf(searchElement, "%d", &searchedNumber);
+                searchForElement(head, searchedNumber, sockfd);
+            }
+            
             
         } else if (buff[0] == '3') {
+            if(fileLoaded == 0){
+                bzero(buff, MAX);
+                write(sockfd, "You must load file first!", sizeof(buff));
+            }else {
+
+            }
             bzero(buff, MAX);
             write(sockfd, "Option 3 not implemented.", sizeof(buff));
         }
@@ -172,6 +216,8 @@ void func(int sockfd)
 // Driver function
 int main()
 {
+    signal(SIGINT, intHandler);
+
     int sockfd, connfd, len;
     struct sockaddr_in servaddr, cli;
 
