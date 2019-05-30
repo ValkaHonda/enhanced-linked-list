@@ -75,6 +75,41 @@ void sendListToClient(struct node *head, int sockfd){
     write(sockfd, buff, sizeof(buff));
 }
 
+void searchForElement(struct node *head, int num, int sockfd){
+    struct node* iterator = head;
+    char buff[MAX];
+    bzero(buff, MAX);
+    int found = 0;
+    int counter = 0;
+
+    while (iterator != NULL)
+    {
+        counter++;
+        if(iterator->number == num){
+            found = 1;
+            break;
+        }
+        iterator = iterator->next;
+    }
+    if(found == 0){
+        // no such number
+        write(sockfd, "No such number!", sizeof(buff));
+    } else {
+        // num is found
+        char searcedNumAsString[30];
+        sprintf(searcedNumAsString, "%d", num);
+        char numberOfIterationsAsString[30];
+        sprintf(numberOfIterationsAsString, "%d", counter);
+        strcat(buff,searcedNumAsString);
+        strcat(buff," is find with ");
+        strcat(buff,numberOfIterationsAsString);
+        strcat(buff," operations");
+
+        write(sockfd, buff, sizeof(buff));
+    }
+    
+}
+
 // Function designed for chat between client and server.
 void func(int sockfd)
 {
@@ -108,7 +143,8 @@ void func(int sockfd)
             // write(sockfd, buff, sizeof(buff));
         } else if (buff[0] == '2') {
             bzero(buff, MAX);
-            write(sockfd, "Option 2 not implemented.", sizeof(buff));
+            searchForElement(head, 15, sockfd);
+            
         } else if (buff[0] == '3') {
             bzero(buff, MAX);
             write(sockfd, "Option 3 not implemented.", sizeof(buff));
