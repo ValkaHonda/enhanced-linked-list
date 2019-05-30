@@ -36,7 +36,7 @@ struct node* pushBack (struct node* head, int value) {
     currentElement->next = newElement;
     return head;
 }
-void loadListFromFile(char* fileName){
+struct node* loadListFromFile(char* fileName, struct node* head){
     int fdread;
     fdread = open("numbers.dat", O_RDONLY);
 	if (fdread == -1) {
@@ -46,19 +46,12 @@ void loadListFromFile(char* fileName){
 
     struct node inputNode;
 	//Counting the records in the file
-	int bitesRead = read(fdread, &inputNode, sizeof(struct node));
-    close(fdread);
+	while(read(fdread, &inputNode, sizeof(struct node)) != 0){
+        head = pushBack(head, inputNode.number);
+    }
 
-    if(bitesRead == -1){
-        printf("You are doing something wrong!\n");
-    } else {
-        puts("No, you are ok.");
-    }
-    if(1){
-        printf("successfully readen:  %d \n", inputNode.number);
-    } else {
-        printf("Something is not right\n" );
-    }
+    close(fdread);
+    return head;
 }
 
 
@@ -67,10 +60,7 @@ void func(int sockfd)
 {
     char buff[MAX];
     int n;
-    int arr[3];
-    arr[0] = 1;
-    arr[1] = 11;
-    arr[2] = 2;
+    struct node *head = NULL;
     // infinite loop for chat
     for (;;) {
         bzero(buff, MAX);
@@ -88,15 +78,27 @@ void func(int sockfd)
         } else if (buff[0] == '1') { // need a fix
             printf("Load...\n");
             bzero(buff, MAX);
-            for(int k = 0; k < 3; k++){
-                char numberAsString[100];
-                sprintf(numberAsString, "%d", arr[k]);
-                strcat(buff, numberAsString);
-                //strcat(); // not ready!!!
-            }
-            printf("%s Should be successfully send\n", buff);
+            buff[0] = '&';
+            head = NULL;
+            // remove this code later
+            // for(int k = 0; k < 3; k++){
+            //     char numberAsString[100];
+            //     sprintf(numberAsString, "%d", arr[k]);
+            //     strcat(buff, numberAsString);
+            //     //strcat(); // not ready!!!
+            // }
+            // printf("%s Should be successfully send\n", buff);
 
-            loadListFromFile("fileNameNotProvided");
+            head = loadListFromFile("fileNameNotProvided",head);
+
+            if(head != NULL){
+                printf("%d\n",head->number);
+                if(head->next != NULL){
+                    printf("%d\n",head->next->number);
+                }
+            }
+
+
 
             write(sockfd, buff, sizeof(buff));
         } else if (buff[0] == '2') {
