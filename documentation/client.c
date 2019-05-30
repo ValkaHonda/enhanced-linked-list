@@ -24,21 +24,21 @@ void func(int sockfd)
         printf("Please enter your input : ");
         n = 0;
         // Client enters his input
-        while ((buff[n++] = getchar()) != '\n')
-            ;
+        while ((buff[n++] = getchar()) != '\n');
         // send message to server
+        
         write(sockfd, buff, sizeof(buff));
         bzero(buff, sizeof(buff));
 
         // receives message from server
         read(sockfd, buff, sizeof(buff));
-        printf("From Server : %s", buff);
-
-        // client logic when the server replies
         if ((strncmp(buff, "exit", 4)) == 0) {
             printf("Client Exit... Thank you for using us!\n");
             break;
         }
+        printf("From Server : %s",buff);
+
+       
     }
 }
 

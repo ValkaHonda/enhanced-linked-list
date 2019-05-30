@@ -12,7 +12,7 @@
 #include <errno.h>
 #include <stdbool.h>
 
-#define MAX 80
+#define MAX 40
 #define PORT 8081
 #define SA struct sockaddr//Linked list:
 struct node{
@@ -38,7 +38,7 @@ struct node* pushBack (struct node* head, int value) {
 }
 struct node* loadListFromFile(char* fileName, struct node* head){
     int fdread;
-    fdread = open("numbers.dat", O_RDONLY);
+    fdread = open(fileName, O_RDONLY);
 	if (fdread == -1) {
 		printf("Cannot open log file\n");
 	}
@@ -53,7 +53,27 @@ struct node* loadListFromFile(char* fileName, struct node* head){
     close(fdread);
     return head;
 }
-
+void sendListToClient(struct node *head, int sockfd){
+    struct node* iterator = head;
+    char buff[MAX];
+    int counter = 0;
+    bzero(buff, MAX);
+    while(iterator != NULL){
+        // char numberAsString[30];
+        // sprintf(numberAsString, "%d", iterator->number);
+        // strcat(buff, numberAsString);
+        // strcat(buff," -> ");
+        printf("%d -> ",iterator->number);
+        iterator = iterator->next;
+        counter++;
+    }
+    printf("END\n");
+    strcat(buff,"Number of iterations: ");
+    char numberAsString[30];
+    sprintf(numberAsString, "%d", counter);
+    strcat(buff, numberAsString);
+    write(sockfd, buff, sizeof(buff));
+}
 
 // Function designed for chat between client and server.
 void func(int sockfd)
@@ -80,46 +100,18 @@ void func(int sockfd)
             bzero(buff, MAX);
             buff[0] = '&';
             head = NULL;
-            // remove this code later
-            // for(int k = 0; k < 3; k++){
-            //     char numberAsString[100];
-            //     sprintf(numberAsString, "%d", arr[k]);
-            //     strcat(buff, numberAsString);
-            //     //strcat(); // not ready!!!
-            // }
-            // printf("%s Should be successfully send\n", buff);
+            
+            head = loadListFromFile("numbers.dat",head);
 
-            head = loadListFromFile("fileNameNotProvided",head);
+            sendListToClient(head,sockfd);
 
-            if(head != NULL){
-                printf("%d\n",head->number);
-                if(head->next != NULL){
-                    printf("%d\n",head->next->number);
-                }
-            }
-
-
-
-            write(sockfd, buff, sizeof(buff));
+            // write(sockfd, buff, sizeof(buff));
         } else if (buff[0] == '2') {
             bzero(buff, MAX);
             write(sockfd, "Option 2 not implemented.", sizeof(buff));
         } else if (buff[0] == '3') {
             bzero(buff, MAX);
             write(sockfd, "Option 3 not implemented.", sizeof(buff));
-        }
-
-         else {
-            bzero(buff, MAX);
-            // copy server message in the buffer
-            buff[0] = 'f';
-            buff[1] = 'a';
-            buff[2] = 'i';
-            buff[3] = 'l';
-
-            // and send that buffer to client
-            write(sockfd, buff, sizeof(buff));
-            break;
         }
     }
 }
