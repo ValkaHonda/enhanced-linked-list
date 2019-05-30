@@ -1,13 +1,66 @@
+#include <stdio.h>
 #include <netdb.h>
 #include <netinet/in.h>
 #include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <arpa/inet.h>
+#include <errno.h>
+#include <stdbool.h>
+
 #define MAX 80
 #define PORT 8081
-#define SA struct sockaddr
+#define SA struct sockaddr//Linked list:
+struct node{
+    int number;
+    struct node* next;
+};
+struct node* pushBack (struct node* head, int value) {
+    if (head == NULL) {
+        head = (struct node*) malloc (sizeof(struct node));
+        head->number = value;
+
+        return head;
+    }
+    struct node* newElement = (struct node*) malloc (sizeof(struct node));
+    newElement->number = value;
+    newElement->next = NULL;
+    struct node* currentElement = head;
+    while (currentElement->next != NULL) {
+        currentElement = currentElement->next;
+    }
+    currentElement->next = newElement;
+    return head;
+}
+void loadListFromFile(char* fileName){
+    int fdread;
+    fdread = open("numbers.dat", O_RDONLY);
+	if (fdread == -1) {
+		printf("Cannot open log file\n");
+	}
+    lseek(fdread,0,SEEK_SET);
+
+    struct node inputNode;
+	//Counting the records in the file
+	int bitesRead = read(fdread, &inputNode, sizeof(struct node));
+    close(fdread);
+
+    if(bitesRead == -1){
+        printf("You are doing something wrong!\n");
+    } else {
+        puts("No, you are ok.");
+    }
+    if(1){
+        printf("successfully readen:  %d \n", inputNode.number);
+    } else {
+        printf("Something is not right\n" );
+    }
+}
+
 
 // Function designed for chat between client and server.
 void func(int sockfd)
@@ -42,6 +95,9 @@ void func(int sockfd)
                 //strcat(); // not ready!!!
             }
             printf("%s Should be successfully send\n", buff);
+
+            loadListFromFile("fileNameNotProvided");
+
             write(sockfd, buff, sizeof(buff));
         } else if (buff[0] == '2') {
             bzero(buff, MAX);
