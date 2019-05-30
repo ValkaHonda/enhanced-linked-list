@@ -11,8 +11,13 @@ void menu(){
     puts("");
     puts("0.Exit");
     puts("1.Load file:");
+    puts("-->Available files with .dat extension");
+    system("ls *.dat");
+    puts("-->Example 1 fileName");
     puts("2.Search element:");
+    puts("-->Example 2 80");
     puts("3.Fast search element");
+    puts("-->Example 3 80");
 }
 void func(int sockfd)
 {
@@ -24,7 +29,11 @@ void func(int sockfd)
         printf("Please enter your input : ");
         n = 0;
         // Client enters his input
-        while ((buff[n++] = getchar()) != '\n');
+        char ch;
+        while ((ch = getchar()) != '\n'){
+            buff[n++] = ch;
+        }
+        
         // send message to server
         
         write(sockfd, buff, sizeof(buff));

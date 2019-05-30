@@ -130,13 +130,30 @@ void func(int sockfd)
             printf("Server Exit...\n");
             write(sockfd, "exit", sizeof(buff));
             break;
-        } else if (buff[0] == '1') { // need a fix
-            printf("Load...\n");
-            bzero(buff, MAX);
-            buff[0] = '&';
+        } else if (buff[0] == '1') { // load a file
+            printf("Loading from file...\n");
+            
+            char str[MAX];
+            strcpy(str, buff);
+            int init_size = strlen(str);
+            char delim[] = " ";
+
+            char *fileName = strtok(str, delim);
+            int wordsCount = 0;
+            while (fileName != NULL)
+            {
+                wordsCount++;
+                if(wordsCount == 2){
+                    break;
+                }
+                //printf("'%s' <---count---> %d\n", fileName,wordsCount);
+                fileName = strtok(NULL, delim);
+            }
+            printf("The name of the file: -->%s<--\n",fileName);
+
             head = NULL;
             
-            head = loadListFromFile("numbers.dat",head);
+            head = loadListFromFile(fileName,head);
 
             sendListToClient(head,sockfd);
 

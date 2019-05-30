@@ -1,0 +1,4 @@
+    0 -> for exit Exit
+    1 numbers.dat -> for File Load
+    2 elementForSearch -> for element search
+    3 elementForSearch -> for Fast element search element
