@@ -110,11 +110,13 @@ int main()
 	int fdwrite;
 
     // write Don't use it anymore!!!
-// /*
-    /*fdwrite = open("numbers.dat", O_APPEND | O_CREAT | O_WRONLY, S_IRWXU);
+//
+    fdwrite = open("numbers2.dat", O_APPEND | O_CREAT | O_WRONLY, S_IRWXU);
 	if (fdwrite == -1) {
-		printf("Cannot open list with users\n");
+		printf("Cannot open file!\n");
 	}
+    int k = 3;
+    write(fdwrite, &k, sizeof(int));
     printf("Testing --> secondHeadElement --> value --> ( %d )\n"
         , secondHeadElement.number);
         for (int i = 0; i < 40; i++) {
@@ -122,13 +124,13 @@ int main()
             write(fdwrite, &secondHeadElement, sizeof(struct node));
         }
 
-	close(fdwrite);*/
-// */
+	close(fdwrite);
+//
     // read
 
     // /*
 
-    fdread = open("numbers.dat", O_RDONLY);
+   /* fdread = open("numbers.dat", O_RDONLY);
 	if (fdread == -1) {
 		printf("Cannot open log file\n");
 	}

@@ -14,7 +14,7 @@
 #include <signal.h>
 
 #define MAX 40
-#define PORT 8080
+#define PORT 8081
 #define SA struct sockaddr//Linked list:
 
 
@@ -44,7 +44,7 @@ struct node* pushBack (struct node* head, int value) {
     currentElement->next = newElement;
     return head;
 }
-struct node* loadListFromFile(char* fileName, struct node* head){
+struct node* loadListFromFile(char* fileName, struct node* head, int *k){
     int fdread;
     fdread = open(fileName, O_RDONLY);
 	if (fdread == -1) {
@@ -53,6 +53,8 @@ struct node* loadListFromFile(char* fileName, struct node* head){
     lseek(fdread,0,SEEK_SET);
 
     struct node inputNode;
+    read(fdread, k,sizeof(int));
+    printf("Pointer value == %d",*k);
 	//Counting the records in the file
 	while(read(fdread, &inputNode, sizeof(struct node)) != 0){
         head = pushBack(head, inputNode.number);
@@ -115,7 +117,7 @@ void searchForElement(struct node *head, int num, int sockfd){
 
         write(sockfd, buff, sizeof(buff));
     }
-    
+
 }
 
 // Function designed for chat between client and server.
@@ -125,6 +127,7 @@ void func(int sockfd)
     int n;
     int fileLoaded = 0;
     struct node *head = NULL;
+    int k = 0;
     // infinite loop for chat
     for (;;) {
         if(keepRunning == 0){
@@ -145,7 +148,7 @@ void func(int sockfd)
             //break; replacing this with ctrl + c
         } else if (buff[0] == '1') { // load a file
             printf("Loading from file...\n");
-            
+
             char str[MAX];
             strcpy(str, buff);
             int init_size = strlen(str);
@@ -165,8 +168,8 @@ void func(int sockfd)
             printf("The name of the file: -->%s<--\n",fileName);
 
             head = NULL;
-            
-            head = loadListFromFile(fileName,head);
+
+            head = loadListFromFile(fileName,head,&k);
             fileLoaded = 1;
 
             sendListToClient(head,sockfd);
@@ -198,8 +201,8 @@ void func(int sockfd)
                 sscanf(searchElement, "%d", &searchedNumber);
                 searchForElement(head, searchedNumber, sockfd);
             }
-            
-            
+
+
         } else if (buff[0] == '3') {
             if(fileLoaded == 0){
                 bzero(buff, MAX);

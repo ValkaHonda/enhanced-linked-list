@@ -5,7 +5,7 @@
 #include <string.h>
 #include <sys/socket.h>
 #define MAX 80
-#define PORT 8080
+#define PORT 8081
 #define SA struct sockaddr
 void menu(){
     puts("");
@@ -33,9 +33,9 @@ void func(int sockfd)
         while ((ch = getchar()) != '\n'){
             buff[n++] = ch;
         }
-        
+
         // send message to server
-        
+
         write(sockfd, buff, sizeof(buff));
         bzero(buff, sizeof(buff));
 
@@ -47,7 +47,7 @@ void func(int sockfd)
         }
         printf("From Server : %s",buff);
 
-       
+
     }
 }
 
